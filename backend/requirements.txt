@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy
+psycopg2-binary
+python-dotenv
+flask-cors
+langchain-community
+langchain-text-splitters
+chromadb
+langchain_google_genai
+pypdf
+flask_apscheduler

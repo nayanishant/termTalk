@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Light mode */
+  --color-gradient-start: #b3b3b3;
+  --color-background-color: #ffffff;
+  --color-card-color: #2b2b2b;
+  --color-card-text-color: #d4d4d4;
+  --color-other-text-color: hsl(0 0% 83% / 0.1);
+}
+
+@theme dark {
+  /* Dark mode */
+  /* --color-gradient-start: #1e1e1e;
+  --color-gradient-end: #3a3a3a; */
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 45s linear infinite;
+  display: flex;
+}
+
+.marquee::before,
+.marquee::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100px;
+  height: 36%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.marquee::before {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    var(--color-background-color) 28%,
+    transparent 100%
+  );
+}
+
+.marquee::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    var(--color-background-color) 28%,
+    transparent 100%
+  );
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
