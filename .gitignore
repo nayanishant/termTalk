@@ -1,7 +1,7 @@
-./backend/uploads
-./backend/chroma_db
-./backend/.env
-./backend/.flaskenv
+/backend/uploads
+/backend/chroma_db
+/backend/.env
+/backend/.flaskenv
 # Python
 *.pyc
 *.pyo
