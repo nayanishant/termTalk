@@ -19,25 +19,27 @@ const Documents = () => {
   const { handleGetFile } = useApiActions();
   const router = useRouter();
 
-  const fetchFiles = useCallback(async () => {
-    try {
-      const result = await handleGetFile();
-      if (result.error) {
-        setError(result.error);
-        setFiles([]);
-      } else if (result.data) {
-        setFiles(result.data);
-        setError(null);
-      }
-    } catch {
-      setError("Failed to fetch files.");
+const fetchFiles = useCallback(async () => {
+  try {
+    const result = await handleGetFile();
+    if (result.error) {
+      setError(result.error);
       setFiles([]);
+    } else if (result.data) {
+      setFiles(result.data);
+      setError(null);
     }
-  }, [handleGetFile]);
+  } catch {
+    setError("Failed to fetch files.");
+    setFiles([]);
+  }
+}, [handleGetFile]);
 
-  useEffect(() => {
-    fetchFiles();
-  }, [fetchFiles]);
+useEffect(() => {
+  fetchFiles();
+  const intervalId = setInterval(fetchFiles, 10000);
+  return () => clearInterval(intervalId);
+}, []);
 
   const handleCardClick = (id: string) => {
     router.push(`/chat/${id}`);
@@ -54,8 +56,8 @@ const Documents = () => {
             onClick={() => handleCardClick(file.uid)}
             className="group bg-background-color rounded-3xl border-card-color cursor-pointer border-[2px] w-full max-w-[16rem] sm:max-w-[18rem] md:max-w-[20rem] lg:max-w-[24rem] aspect-square flex flex-col items-center justify-center text-center hover:shadow-2xl max-h-96 transition-transform duration-300 ease-in-out hover:-translate-y-0.5"
           >
-            <div className="flex flex-col justify-center items-center flex-1 px-2 sm:px-4">
-              <div className="my-6 sm:my-8 2xl:my-11">
+            <div className="flex flex-col justify-center items-center flex-1 px-2 sm:px-4 w-full">
+              <div className="my-6 sm:my-8 2xl:my-11 flex flex-col items-center w-full">
                 <FileText className="w-20 sm:w-24 md:w-28 lg:w-32 h-20 sm:h-24 md:h-28 lg:h-32" />
                 <p className="mt-2 text-sm sm:text-base truncate max-w-[98%]">
                   {file.name}

@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
-
-interface promptExample {
-  heading: string;
-  prompt: string;
+interface WelcomeChatScreenProps {
+  onPromptClick: (prompt: string) => void;
 }
 
-const promptExampleData: promptExample[] = [
+const promptExampleData: Array<{ heading: string; prompt: string }> = [
   {
     heading: "Extract and Explain Specific Clause",
     prompt:
@@ -20,9 +17,7 @@ const promptExampleData: promptExample[] = [
   },
 ];
 
-const ChatWelcomeScreen = () => {
-  const [message, setMessage] = useState("");
-
+const WelcomeChatScreen = ({ onPromptClick }: WelcomeChatScreenProps) => {
   return (
     <div className="max-w-full sm:max-w-2xl lg:max-w-4xl 2xl:max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-36 2xl:py-44 m-auto">
       <div className="flex flex-col justify-center items-center gap-10 w-full">
@@ -39,7 +34,9 @@ const ChatWelcomeScreen = () => {
             <div
               key={index}
               className="flex flex-col bg-card-color text-card-text-color rounded-xl p-4 sm:p-6 text-sm sm:text-base gap-2 w-full transition-transform duration-300 ease-in-out hover:-translate-y-0.5 shadow-xl cursor-pointer"
-              onClick={() => setMessage(item.prompt)}
+              onClick={() => onPromptClick(item.prompt)}
+              role="button"
+              aria-label={`Select prompt: ${item.prompt}`}
             >
               <p className="font-bold">{item.heading}</p>
               <p className="text-xs sm:text-sm md:text-base line-clamp-4 sm:line-clamp-none">
@@ -53,4 +50,4 @@ const ChatWelcomeScreen = () => {
   );
 };
 
-export default ChatWelcomeScreen;
+export default WelcomeChatScreen;

@@ -1,5 +1,12 @@
 import api_url from "@/utils/api";
 
+interface ChatResponse {
+  answer?: string;
+  source?: string;
+  page?: string | null;
+  error?: string;
+}
+
 export const useApiActions = () => {
   const handleGetFile = async () => {
     try {
@@ -58,40 +65,39 @@ export const useApiActions = () => {
   const handleChat = async (
     question: string,
     file_uid: string,
-    onMessage: (msg: string) => void,
+    onMessage: (msg: string, source?: string, page?: string | null) => void,
     onDone?: () => void,
     onError?: (err: string) => void
   ) => {
-    if (!question) {
-      onError?.("Missing 'question' field");
-      return;
-    }
-    if (!file_uid) {
-      onError?.("Missing 'file_uid' field");
-      return;
+  if (!question.trim()) {
+    onError?.('Missing or empty "question" field');
+    return;
+  }
+  if (!file_uid.trim()) {
+    onError?.('Missing or empty "file_uid" field');
+    return;
+  }
+
+  try {
+    const response = await api_url.post("/chat", { question, file_uid });
+    const { answer, source, page, error } = response.data as ChatResponse;
+
+    if (error) {
+      onError?.(error);
+    } else if (answer) {
+      onMessage(answer, source, page);
+    } else {
+      onError?.("No answer received from server");
     }
 
-    try {
-      const response = await api_url.post(
-        "/chat",
-        { question, file_uid },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (response.data.answer) {
-        onMessage(response.data.answer);
-      } else if (response.data.error) {
-        onError?.(response.data.error);
-      }
-
-      onDone?.();
-    } catch (err: any) {
-      onError?.(
-        err?.response?.data?.error ||
-          err.message ||
-          "Something went wrong while sending the chat request."
-      );
-    }
+    onDone?.();
+  } catch (err: any) {
+    onError?.(
+      err.response?.data?.error ||
+        err.message ||
+        `Failed to process query for file_uid ${file_uid}`
+    );
+  }
   };
   
   return {
