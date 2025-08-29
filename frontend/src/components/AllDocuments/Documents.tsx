@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import FileUploadCard from "@/components/AllDocuments/FileUploadCard";
-import { FileText } from "lucide-react";
+import { FileText, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useApiActions } from "@/hooks/useApiActions";
+import { toast } from "sonner";
 
 interface IFile {
   id: number;
@@ -16,46 +17,64 @@ interface IFile {
 const Documents = () => {
   const [files, setFiles] = useState<IFile[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { handleGetFile } = useApiActions();
+  const { handleGetFile, handleDeleteFile } = useApiActions();
   const router = useRouter();
 
-const fetchFiles = useCallback(async () => {
-  try {
-    const result = await handleGetFile();
-    if (result.error) {
-      setError(result.error);
+  const fetchFiles = useCallback(async () => {
+    try {
+      const result = await handleGetFile();
+      if (result.error) {
+        setError(result.error);
+        setFiles([]);
+      } else if (result.data) {
+        setFiles(result.data);
+        setError(null);
+      }
+    } catch {
+      setError("Failed to fetch files.");
       setFiles([]);
-    } else if (result.data) {
-      setFiles(result.data);
-      setError(null);
     }
-  } catch {
-    setError("Failed to fetch files.");
-    setFiles([]);
-  }
-}, [handleGetFile]);
+  }, [handleGetFile]);
 
-useEffect(() => {
-  fetchFiles();
-  const intervalId = setInterval(fetchFiles, 10000);
-  return () => clearInterval(intervalId);
-}, []);
+  useEffect(() => {
+    fetchFiles();
+    const intervalId = setInterval(fetchFiles, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleCardClick = (id: string) => {
     router.push(`/chat/${id}`);
   };
 
+  const onDeleteFile = async (fileUId: string) => {
+      const response = await handleDeleteFile(fileUId)
+
+      if (response.error) {
+        toast.error(response.error)
+      } else 
+        toast.success(response.message)
+        setFiles((prev) => prev.filter((f) => f.uid !== fileUId));
+  }
+
   return (
     <div className="w-full flex flex-wrap gap-4 h-[89vh] overflow-y-auto p-1">
       <FileUploadCard onUploadSuccess={fetchFiles} />
-
       {files.length > 0 &&
         files.map((file) => (
           <div
             key={file.id}
             onClick={() => handleCardClick(file.uid)}
-            className="group bg-background-color rounded-3xl border-card-color cursor-pointer border-[2px] w-full max-w-[16rem] sm:max-w-[18rem] md:max-w-[20rem] lg:max-w-[24rem] aspect-square flex flex-col items-center justify-center text-center hover:shadow-2xl max-h-96 transition-transform duration-300 ease-in-out hover:-translate-y-0.5"
+            className="group bg-background-color rounded-3xl border-card-color cursor-pointer border-[2px] w-full max-w-[16rem] sm:max-w-[18rem] md:max-w-[20rem] lg:max-w-[24rem] aspect-square flex flex-col items-center justify-center text-center max-h-96 transition-transform duration-300 ease-in-out hover:-translate-y-0.5"
           >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteFile(file.uid);
+              }}
+              className="absolute top-2 right-2 p-1 bg-card-color rounded-full text-card-text-color opacity-0 cursor-pointer group-hover:opacity-100 transition hover:scale-105 hover:drop-shadow-sm"
+            >
+              <X size={16} />
+            </button>
             <div className="flex flex-col justify-center items-center flex-1 px-2 sm:px-4 w-full">
               <div className="my-6 sm:my-8 2xl:my-11 flex flex-col items-center w-full">
                 <FileText className="w-20 sm:w-24 md:w-28 lg:w-32 h-20 sm:h-24 md:h-28 lg:h-32" />
@@ -77,6 +96,13 @@ useEffect(() => {
               >
                 {file.status}
               </p>
+              {file.status === "Uploaded" ? (
+                <p className="text-xs text-card-color font-semibold pt-1">
+                  Preparing to process
+                </p>
+              ) : (
+                ""
+              )}
             </div>
 
             <div
@@ -94,7 +120,7 @@ useEffect(() => {
         ))}
 
       {error && (
-        <p className="text-red-500 text-sm flex justify-center items-end px-96">
+        <p className="text-red-500 text-sm flex justify-center items-end px-86">
           {error}
         </p>
       )}

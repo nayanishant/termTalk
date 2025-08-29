@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import InputArea from "@/components/Chat/InputArea";
 import ResponseCard from "@/components/Chat/ResponseCard";
@@ -70,12 +70,9 @@ export default function ChatPage() {
     [file_uid, handleChat]
   );
 
-  const handlePromptClick = useCallback(
-    (prompt: string) => {
-      setMessage(prompt);
-    },
-    []
-  );
+  const handlePromptClick = useCallback((prompt: string) => {
+    setMessage(prompt);
+  }, []);
 
   return (
     <div className="flex flex-col h-[93vh] m-auto max-w-5xl py-3">
@@ -93,19 +90,19 @@ export default function ChatPage() {
                 page={m.page}
               />
             ))}
-            {isLoading && (
-              <div className="flex justify-center items-center py-2">
-                <div
-                  className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"
-                  role="status"
-                  aria-label="Loading"
-                />
-              </div>
-            )}
           </>
         )}
         <div ref={bottomRef} />
       </div>
+      {isLoading && (
+        <div className="flex justify-center items-center py-2">
+          <div
+            className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"
+            role="status"
+            aria-label="Loading"
+          />
+        </div>
+      )}
       <div className="mt-2 px-2">
         <InputArea
           message={message}

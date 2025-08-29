@@ -11,7 +11,7 @@ const NavBar = () => {
   const hideBackButton = ["/", "/all-documents"].includes(pathname);
 
   return (
-    <div className="flex justify-between items-center px-4 xl:py-2.5 2xl:py-4">
+    <div className="flex justify-between items-center px-14 xl:py-2.5 2xl:py-4">
       <p className="font-semibold text-lg">TermTalk</p>
       {!hideBackButton && (
         <Button

@@ -33,6 +33,15 @@ export const useApiActions = () => {
     }
   };
 
+  const handleDeleteFile = async (fileUId: string) => {
+    try {
+      const response = await api_url.delete(`/delete-file/${fileUId}`);
+      return response.data
+    } catch (error: any) {
+      return { error: error.response?.data?.error || error.message };
+    }
+  };
+
   const handleUploadFile = async (file: File) => {
     try {
       const formData = new FormData();
@@ -69,39 +78,40 @@ export const useApiActions = () => {
     onDone?: () => void,
     onError?: (err: string) => void
   ) => {
-  if (!question.trim()) {
-    onError?.('Missing or empty "question" field');
-    return;
-  }
-  if (!file_uid.trim()) {
-    onError?.('Missing or empty "file_uid" field');
-    return;
-  }
-
-  try {
-    const response = await api_url.post("/chat", { question, file_uid });
-    const { answer, source, page, error } = response.data as ChatResponse;
-
-    if (error) {
-      onError?.(error);
-    } else if (answer) {
-      onMessage(answer, source, page);
-    } else {
-      onError?.("No answer received from server");
+    if (!question.trim()) {
+      onError?.('Missing or empty "question" field');
+      return;
+    }
+    if (!file_uid.trim()) {
+      onError?.('Missing or empty "file_uid" field');
+      return;
     }
 
-    onDone?.();
-  } catch (err: any) {
-    onError?.(
-      err.response?.data?.error ||
-        err.message ||
-        `Failed to process query for file_uid ${file_uid}`
-    );
-  }
+    try {
+      const response = await api_url.post("/chat", { question, file_uid });
+      const { answer, source, page, error } = response.data as ChatResponse;
+
+      if (error) {
+        onError?.(error);
+      } else if (answer) {
+        onMessage(answer, source, page);
+      } else {
+        onError?.("No answer received from server");
+      }
+
+      onDone?.();
+    } catch (err: any) {
+      onError?.(
+        err.response?.data?.error ||
+          err.message ||
+          `Failed to process query for file_uid ${file_uid}`
+      );
+    }
   };
-  
+
   return {
     handleGetFile,
+    handleDeleteFile,
     handleUploadFile,
     handleChat,
   };
