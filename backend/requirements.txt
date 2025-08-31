@@ -9,3 +9,4 @@ chromadb
 langchain_google_genai
 pypdf
 flask_apscheduler
+gunicorn
