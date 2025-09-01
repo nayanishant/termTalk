@@ -14,6 +14,8 @@ interface Message {
   page?: string | null;
 }
 
+export const runtime = "edge";
+
 export default function ChatPage() {
   const { handleChat } = useApiActions();
   const [message, setMessage] = useState("");

@@ -2,6 +2,8 @@
 
 import Documents from "@/components/AllDocuments/Documents";
 
+export const runtime = "edge";
+
 export default function AllDocuments() {
   return (
     <div className="px-14">

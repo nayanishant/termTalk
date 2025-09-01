@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pages:build": "npx @cloudflare/next-on-pages"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -22,6 +23,7 @@
     "tailwind-scrollbar": "^4.0.2"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.15",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

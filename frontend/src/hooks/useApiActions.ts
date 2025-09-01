@@ -1,9 +1,15 @@
 import api_url from "@/utils/api";
+import { AxiosError } from "axios";
 
 interface ChatResponse {
   answer?: string;
   source?: string;
   page?: string | null;
+  error?: string;
+}
+
+interface ApiError {
+  message?: string;
   error?: string;
 }
 
@@ -18,14 +24,15 @@ export const useApiActions = () => {
       }
 
       return { data };
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiError | string>;
       let errorMessage = "Something went wrong while fetching files.";
 
-      if (error.response && error.response.data) {
-        if (typeof error.response.data === "string") {
-          errorMessage = error.response.data;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
+      if (err.response?.data) {
+        if (typeof err.response.data === "string") {
+          errorMessage = err.response.data;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
         }
       }
 
@@ -36,9 +43,10 @@ export const useApiActions = () => {
   const handleDeleteFile = async (fileUId: string) => {
     try {
       const response = await api_url.delete(`/delete-file/${fileUId}`);
-      return response.data
-    } catch (error: any) {
-      return { error: error.response?.data?.error || error.message };
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<ApiError>;
+      return { error: err.response?.data?.error || err.message };
     }
   };
 
@@ -54,16 +62,17 @@ export const useApiActions = () => {
       });
 
       return { data: response.data };
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiError | string>;
       let errorMessage = "Something went wrong while uploading the file.";
 
-      if (error.response && error.response.data) {
-        if (typeof error.response.data === "string") {
-          errorMessage = error.response.data;
-        } else if (error.response.data.error) {
-          errorMessage = error.response.data.error;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
+      if (err.response?.data) {
+        if (typeof err.response.data === "string") {
+          errorMessage = err.response.data;
+        } else if (err.response.data.error) {
+          errorMessage = err.response.data.error;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
         }
       }
 
@@ -100,7 +109,8 @@ export const useApiActions = () => {
       }
 
       onDone?.();
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiError>;
       onError?.(
         err.response?.data?.error ||
           err.message ||

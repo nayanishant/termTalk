@@ -6,6 +6,11 @@ import { Button } from "../ui/button";
 import api_url from "@/utils/api";
 import { toast } from "sonner";
 
+interface ErrorResponse {
+  error?: string;
+  message?: string;
+}
+
 const FileUploadCard = ({
   onUploadSuccess,
 }: {
@@ -14,40 +19,42 @@ const FileUploadCard = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleUploadFile = async (file: File) => {
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
+const handleUploadFile = async (file: File) => {
+  setLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
 
-      const response = await api_url.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+    const response = await api_url.post("/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-      toast.success(response.data.message);
+    toast.success(response.data.message);
 
-      if (onUploadSuccess) onUploadSuccess();
+    if (onUploadSuccess) onUploadSuccess();
 
-      return { data: response.data };
-    } catch (error: any) {
-      let errorMessage = "Something went wrong while uploading the file.";
+    return { data: response.data };
+  } catch (err) {
+    let errorMessage = "Something went wrong while uploading the file.";
 
-      if (error.response && error.response.data) {
-        if (typeof error.response.data === "string") {
-          errorMessage = error.response.data;
-        } else if (error.response.data.error) {
-          errorMessage = error.response.data.error;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        }
+    const error = err as { response?: { data?: ErrorResponse | string } };
+
+    if (error.response?.data) {
+      if (typeof error.response.data === "string") {
+        errorMessage = error.response.data;
+      } else if (error.response.data.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
       }
-
-      toast.error(errorMessage);
-      return { error: errorMessage };
-    } finally {
-      setLoading(false);
     }
-  };
+
+    toast.error(errorMessage);
+    return { error: errorMessage };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();

@@ -47,14 +47,13 @@ const Documents = () => {
   };
 
   const onDeleteFile = async (fileUId: string) => {
-      const response = await handleDeleteFile(fileUId)
+    const response = await handleDeleteFile(fileUId);
 
-      if (response.error) {
-        toast.error(response.error)
-      } else 
-        toast.success(response.message)
-        setFiles((prev) => prev.filter((f) => f.uid !== fileUId));
-  }
+    if (response.error) {
+      toast.error(response.error);
+    } else toast.success(response.message);
+    setFiles((prev) => prev.filter((f) => f.uid !== fileUId));
+  };
 
   return (
     <div className="w-full flex flex-wrap gap-4 h-[89vh] overflow-y-auto p-1">
