@@ -38,6 +38,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 chroma_client = chromadb.HttpClient(host="chromadb", port=9999)
+# chroma_client = chromadb.PersistentClient(path=app.config['CHROMA_PATH'])
 app.config['chroma_client'] = chroma_client
 
 if not app.config['GEMINI_API_KEY']:
